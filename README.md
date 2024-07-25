@@ -12,4 +12,10 @@ This project is a real-time weather monitoring application that retrieves and di
 - Weather forecasts
 - Location-based weather information
 
-## Architecture
+## Steps to Run Project 
+- install jar in your local system
+- after that create Database by using weather_schema.txt file
+- open cmd at your jar file directory
+- run "java -jar readFile-0.0.3-SNAPSHOT.jar config.json"
+- which get data from #open wether website
+- and add it to your databse
