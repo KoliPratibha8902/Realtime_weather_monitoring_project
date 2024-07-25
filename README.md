@@ -19,3 +19,6 @@ This project is a real-time weather monitoring application that retrieves and di
 - run "java -jar readFile-0.0.3-SNAPSHOT.jar config.json"
 - which get data from #open wether website
 - and add it to your databse
+
+## If u want more details 
+- msg me on email : atrcpit2pk@gmail.com
