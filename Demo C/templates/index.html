@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Data Visualization</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Use CSS to control the size of the canvas */
+        #chartContainer {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 40px auto; /* Add margin for better presentation */
+        }
+
+        .chartSection {
+            width: 480px; /* Adjust the width as needed */
+        }
+
+        .myChart {
+            width: 100%;
+            height: 100%;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        body {
+            background-color: #f0f8ff; /* Light blue background color */
+        }
+    </style>
+</head>
+<body>
+    <div id="chartContainer">
+        <!-- Temperature Chart -->
+        <div class="chartSection">
+            <h2>Temperature Chart (°C)</h2>
+            <canvas id="temperatureChart" class="myChart"></canvas>
+        </div>
+
+        <!-- Wind Speed Chart -->
+        <div class="chartSection">
+            <h2>Wind Speed Chart (m/s)</h2>
+            <canvas id="windSpeedChart" class="myChart"></canvas>
+        </div>
+
+        <!-- Pressure Chart -->
+        <div class="chartSection">
+            <h2>Pressure Chart (hPa)</h2>
+            <canvas id="pressureChart" class="myChart"></canvas>
+        </div>
+
+        <!-- Humidity Chart -->
+        <div class="chartSection">
+            <h2>Humidity Chart (%)</h2>
+            <canvas id="humidityChart" class="myChart"></canvas>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Fetch data from the Flask endpoint
+            fetch('/data')
+                .then(response => response.json())
+                .then(data => {
+                    // Update temperature values less than or equal to zero to zero
+                    data.forEach(item => {
+                        if (item.temperature <= 0) {
+                            item.temperature = 0;
+                        }
+                    });
+
+                    // Extract data for different charts
+                    const labels = data.map(item => item.city);
+                    const temperatureValues = data.map(item => item.temperature);
+                    const windSpeedValues = data.map(item => item.wind_speed);
+                    const pressureValues = data.map(item => item.pressure);
+                    const humidityValues = data.map(item => item.humidity);
+
+                    // Temperature Chart
+                    createBarChart('temperatureChart', 'Temperature (°C)', labels, temperatureValues);
+
+                    // Wind Speed Chart
+                    createBarChart('windSpeedChart', 'Wind Speed (m/s)', labels, windSpeedValues);
+
+                    // Pressure Chart
+                    createBarChart('pressureChart', 'Pressure (hPa)', labels, pressureValues);
+
+                    // Humidity Chart
+                    createBarChart('humidityChart', 'Humidity (%)', labels, humidityValues);
+                })
+                .catch(error => console.error('Error fetching data:', error));
+
+            // Function to create a bar chart
+            function createBarChart(chartId, label, labels, data) {
+                const ctx = document.getElementById(chartId).getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: label,
+                            data: data,
+                            backgroundColor: 'rgba(7, 88, 88, 0.7)',
+                            borderColor: 'rgba(7, 198, 198, 1)',
+                            borderWidth: 1,
+                        }],
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                            },
+                        },
+                    },
+                });
+            }
+        });
+    </script>
+</body>
+</html>

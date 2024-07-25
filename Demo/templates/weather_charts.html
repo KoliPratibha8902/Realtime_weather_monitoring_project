@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Data Visualization</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <style>
+        /* Use CSS to control the size of the map container */
+        #mapContainer {
+            width: 1000px;
+            /* Adjust the width as needed */
+            height: 500px;
+            /* Adjust the height as needed */
+            margin: 40px auto;
+            /* Add margin for better presentation */
+        }
+        body {
+            background-color: #f0f8ff; /* Light blue background color */
+        }
+        #visualizationContainer {
+            display: flex;
+            justify-content: space-between;
+            width: 1000px; /* Adjust the width as needed */
+            margin: 40px auto; /* Add margin for better presentation */
+        }
+    </style>
+</head>
+
+<body>
+    <div id="mapContainer"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Cities to display on the map
+            const cities = ['Mumbai', 'Chennai', 'Raipur', 'Manali'];
+
+            // Initialize Leaflet map
+            const map = L.map('mapContainer').setView([20.5937, 78.9629], 5); // Set initial view to India
+
+            // Add a tile layer to the map (you can choose a different tile provider)
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            // Fetch temperature data from Flask and add markers to the map
+            cities.forEach(city => {
+                // Fetch temperature data for the city from the Flask endpoint
+                fetch(`/data?city=${encodeURIComponent(city)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.length > 0) {
+                            const temperature = data[cities].temperature;
+
+                            // Fetch coordinates for the city using Nominatim
+                            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(city)}`)
+                                .then(response => response.json())
+                                .then(geocodingData => {
+                                    if (geocodingData.length > 0) {
+                                        const latitude = geocodingData[cities].lat;
+                                        const longitude = geocodingData[cities].lon;
+
+                                        const marker = L.marker([latitude, longitude]).addTo(map);
+                                        marker.bindPopup(`<b>${city}</b><br>Temperature: ${temperature}°C`);
+                                    }
+                                })
+                                .catch(error => console.error('Error fetching geocoding data:', error));
+                        }
+                    })
+                    .catch(error => console.error('Error fetching temperature data:', error));
+            });
+        });
+    </script>
+</body>
+
+</html>

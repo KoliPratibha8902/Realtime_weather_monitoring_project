@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Data Visualization</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Use CSS to control the size of the canvas */
+        #chartContainer {
+            display: flex;
+            justify-content: space-between;
+            width: 1000px; /* Adjust the width as needed */
+            margin: 40px auto; /* Add margin for better presentation */
+        }
+        #chartSection,
+        #tableSection {
+            width: 480px; /* Increased width for better presentation */
+            margin-bottom: 40px; /* Increased margin between chart and table */
+        }
+
+        #myChart {
+            width: 100%;
+            height: 100%;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px; /* Increased padding for better presentation */
+            text-align: left;
+        }
+
+        th:nth-child(2),
+        td:nth-child(2) {
+            /* Increase the width of the Time Local column */
+            min-width: 150px; /* Adjust the width as needed */
+            max-width: 200px; /* Adjust the width as needed */
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        h2 {
+            text-align: center;
+        }
+        body {
+            background-color: #f0f8ff; /* Light blue background color */
+        }
+    
+        #visualizationContainer {
+            display: flex;
+            justify-content: space-between;
+            width: 1000px; /* Adjust the width as needed */
+            margin: 40px auto; /* Add margin for better presentation */
+        }
+    </style>
+    </style>
+</head>
+<body>
+    <div id="chartContainer">
+        <!-- Left Part - Bar Chart -->
+        <div id="chartSection">
+            <h2>Temperature Chart (°C)</h2>
+            <canvas id="myChart"></canvas>
+        </div>
+
+        <!-- Right Part - Weather Data Table -->
+        <div id="tableSection">
+            <h2>Weather Data Table</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>City</th>
+                        <th>Time Local</th>
+                        <th>Temperature (°C)</th>
+                        <th>Wind Speed (m/s)</th>
+                        <th>Pressure (hPa)</th>
+                        <th>Humidity (%)</th>
+                    </tr>
+                </thead>
+                <tbody id="weatherTableBody">
+                    <!-- Weather data rows will be added dynamically using JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Fetch data from the Flask endpoint
+            fetch('/data')
+                .then(response => response.json())
+                .then(data => {
+                    // Update temperature values less than or equal to zero to zero
+                    data.forEach(item => {
+                        if (item.temperature <= 0) {
+                            item.temperature = 0;
+                        }
+                    });
+                    // Extract data for the chart
+                    const labels = data.map(item => item.city);
+                    const temperatureValues = data.map(item => item.temperature);
+                    // Create a chart using Chart.js
+                    const ctx = document.getElementById('myChart').getContext('2d');
+                    const myChart = new Chart(ctx, {
+                        type: 'bar', // Change the chart type to 'bar'
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Temperature (°C)',
+                                data: temperatureValues,
+                                backgroundColor: 'rgba(7, 88, 88, 0.7)', // Adjust colors as needed
+                                borderColor: 'rgba(7, 198, 198, 1)',
+                                borderWidth: 1,
+                            }],
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                },
+                            },
+                        },
+                    });
+                    // Populate the weather data table
+                    const tableBody = document.getElementById('weatherTableBody');
+                    data.forEach(item => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${item.city}</td>
+                            <td>${item.time_local}</td>
+                            <td>${item.temperature}</td>
+                            <td>${item.wind_speed}</td>
+                            <td>${item.pressure}</td>
+                            <td>${item.humidity}</td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>City Weather Data Visualization</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Use CSS to control the size of the canvas and arrange the layout */
+        #visualizationContainer {
+            display: flex;
+            justify-content: space-between;
+            width: 1000px; /* Adjust the width as needed */
+            margin: 40px auto; /* Add margin for better presentation */
+        }
+
+        #pieChartSection,
+        #tableSection {
+            width: 480px; /* Adjust the width as needed */
+            margin-bottom: 40px; /* Add margin between chart and table */
+        }
+
+        #pieChartContainer {
+            width: 100%;
+            height: 400px; /* Adjust the height as needed */
+        }
+
+        #pieChart {
+            width: 100%;
+            height: 100%;
+        }   
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px; /* Adjust padding for better presentation */
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        h2 {
+            text-align: center;
+        }
+        body {
+            background-color: #f0f8ff; /* Light blue background color */
+        }
+    
+        #visualizationContainer {
+            display: flex;
+            justify-content: space-between;
+            width: 1000px; /* Adjust the width as needed */
+            margin: 40px auto; /* Add margin for better presentation */
+        }
+    </style>
+
+</head>
+<body>
+    <div id="visualizationContainer">
+        <!-- Left Part - Pie Chart -->
+        <div id="pieChartSection">
+            <h2>City Weather Data Visualization</h2>
+            <div id="pieChartContainer">
+                <canvas id="pieChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Right Part - Weather Data Table -->
+        <div id="tableSection">
+            <h2>Weather Data Table</h2>
+            <table>
+                <thead>
+                <!-- hectopascals (hPa) or millibars (mb). --> 
+                    <tr>
+                        <th>City</th>
+                        <th>Time Local</th>
+                        <th>Temperature (°C)</th>
+                        <th>Wind Speed (m/s)</th>
+                        <th>Pressure (hPa)/(mb)</th>
+                        <th>Humidity (%)</th>
+                    </tr>
+                </thead>
+                <tbody id="weatherTableBody">
+                    <!-- Weather data rows will be added dynamically using JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Fetch data from the Flask endpoint
+            fetch('/data')
+                .then(response => response.json())
+                .then(data => {
+                    // Extract data for the pie chart
+                    const cityLabels = data.map(item => item.city);
+                    const humidityValues = data.map(item => item.humidity);
+
+                    // Create a pie chart using Chart.js
+                    const ctx = document.getElementById('pieChart').getContext('2d');
+                    const pieChart = new Chart(ctx, {
+                        type: 'pie',
+                        data: {
+                            labels: cityLabels,
+                            datasets: [{
+                                data: humidityValues,
+                                backgroundColor: [
+                                    'rgba(255, 99, 12, 0.7)',
+                                    'rgba(54, 162, 235, 0.7)',
+                                    'rgba(255, 206, 86, 0.7)',
+                                    'rgba(75, 192, 192, 0.7)',
+                                    'rgba(153, 102, 255, 0.7)',
+                                    'rgba(255, 159, 64, 0.7)',
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)',
+                                ],
+                                borderWidth: 1,
+                            }],
+                        },
+                    });
+                    // Populate the weather data table
+                    const tableBody = document.getElementById('weatherTableBody');
+                    data.forEach(item => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${item.city}</td>
+                            <td style="width: 150px;">${item.time_local}</td>
+                            <td>${item.humidity}</td>
+                            <td>${item.temperature}</td>
+                            <td>${item.wind_speed}</td>
+                            <td>${item.pressure}</td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        });
+    </script>
+</body>
+</html>

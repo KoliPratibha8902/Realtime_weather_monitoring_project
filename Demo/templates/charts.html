@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Data Visualization</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/heatmap.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/windrose"></script>
+    <!-- Add any additional stylesheets or scripts as needed -->
+</head>
+<body>
+    <!-- Your content goes here -->
+    <body>
+        <div id="heatmapContainer" style="width: 100%; height: 400px;"></div>
+        <div id="areaChartContainer" style="width: 100%; height: 400px;"></div>
+        <div id="windRoseChartContainer" style="width: 100%; height: 400px;"></div>
+    
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                // Fetch data from the Flask endpoint or your data source
+                fetch('/heatmap-data')
+                    .then(response => response.json())
+                    .then(data => {
+                        // Create a heatmap using heatmap.js
+                        const heatmapInstance = h337.create({
+                            container: document.getElementById('heatmapContainer'),
+                        });
+                        heatmapInstance.setData(data);
+                    })
+                    .catch(error => console.error('Error fetching heatmap data:', error));
+    
+                fetch('/area-chart-data')
+                    .then(response => response.json())
+                    .then(data => {
+                        // Extract data for the area chart
+                        const labels = data.map(item => item.label);
+                        const areaValues = data.map(item => item.value);
+    
+                        // Create an area chart using Chart.js
+                        const ctx = document.getElementById('areaChartContainer').getContext('2d');
+                        new Chart(ctx, {
+                            type: 'area',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    label: 'Area Chart',
+                                    data: areaValues,
+                                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                    borderColor: 'rgba(75, 192, 192, 1)',
+                                    borderWidth: 1,
+                                }],
+                            },
+                        });
+                    })
+                    .catch(error => console.error('Error fetching area chart data:', error));
+    
+                fetch('/wind-rose-data')
+                    .then(response => response.json())
+                    .then(data => {
+                        // Create a wind rose chart using windrose library
+                        const windRoseChart = new Windrose({
+                            container: 'windRoseChartContainer',
+                            data: data,
+                        });
+                    })
+                    .catch(error => console.error('Error fetching wind rose data:', error));
+            });
+        </script>
+    </body>
+    </html>
+    
+</body>
+</html>
