@@ -1,0 +1,16 @@
+{
+  "dbData": {
+    "driver": "jdbc:mysql://localhost:3306/weather",
+    "class": "com.mysql.cj.jdbc.Driver",
+    "user": "root",
+    "password": "D@8sep2002"
+  },
+  "city": [
+    "Mumbai",
+    "Dhule",
+    "Pune",
+    "Kolkata"
+  ],
+  "port":9088,
+  "apiUrl": "http://api.weatherstack.com/current?access_key=42edcdaded06db7094cda9856d579366&query="
+}
