@@ -9,5 +9,4 @@ This project is a real-time weather monitoring application that retrieves and di
 - Weather forecasts
 - Location-based weather information
 
-## Installation
-To run this project locally, follow these steps:
+## Architecture
