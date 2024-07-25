@@ -1,0 +1,13 @@
+CREATE DATABASE weather;
+
+use weather;
+create table weatherdata (city varchar(100),country varchar(100),time_local varchar(100),temperature varchar(100),wind_speed varchar(100),wind_degree varchar(100),wind_dir varchar(100),pressure varchar(100),
+precip varchar(100),humidity varchar(100),cloudcover varchar(100),feelslike varchar(100),uv_index varchar(100),visibility varchar(100),insertdate datetime);
+
+
+
+
+
+
+
+
