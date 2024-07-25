@@ -21,4 +21,5 @@ This project is a real-time weather monitoring application that retrieves and di
 - and add it to your databse
 
 ## If u want more details 
-- msg me on email : atrcpit2pk@gmail.com
+- mail me on email : atrcpit2pk@gmail.com
+- msg me on : 7276168939
